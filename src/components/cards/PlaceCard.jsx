@@ -6,9 +6,9 @@ export default function PlaceCard() {
       <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-black/15" />
 
       <div className="flex gap-3">
-        <div className="relative h-[88px] w-[88px] shrink-0 overflow-hidden rounded-2xl">
+        <div className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-2xl">
           <img
-            src="https://images.unsplash.com/photo-1547234935-80c7145ec969?auto=format&fit=crop&w=400&q=80"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Charyn_Canyon_03.jpg/640px-Charyn_Canyon_03.jpg"
             alt="차른캐년"
             className="h-full w-full object-cover"
           />
