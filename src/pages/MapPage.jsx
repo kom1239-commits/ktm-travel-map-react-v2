@@ -7,6 +7,7 @@ import {
   Mountain, Waves, Landmark,
 } from "lucide-react";
 import PlaceCard from '../components/cards/PlaceCard'
+import BottomNav from '../components/layout/BottomNav'
 
 const YELLOW = "#F4C400";
 const NAVY = "#0E2D50";
@@ -158,16 +159,10 @@ export default function MapPage() {
           </div>
         </section>
 
+        <div className="h-20" />
+
         {/* ============ 6. 하단 탭바 ============ */}
-        <nav className="flex-shrink-0 mt-2 rounded-t-3xl px-4 pb-3 pt-3 text-white" style={{ backgroundColor: NAVY }}>
-          <div className="grid grid-cols-5">
-            <BottomTab active icon={<Home size={22} fill={YELLOW} />} label="홈" />
-            <BottomTab icon={<Map size={22} />} label="지도" />
-            <BottomTab icon={<Heart size={22} />} label="코스" />
-            <BottomTab icon={<Bookmark size={22} />} label="저장" />
-            <BottomTab icon={<User size={22} />} label="내 여행" />
-          </div>
-        </nav>
+        <BottomNav />
       </main>
     </div>
   );
@@ -198,16 +193,5 @@ function PlacePin({ spot }) {
       </div>
       <div className="mx-auto mt-0.5 h-2.5 w-2.5 rounded-full border-2 border-white" style={{ backgroundColor: NAVY }} />
     </div>
-  );
-}
-
-function BottomTab({ icon, label, active = false }) {
-  return (
-    <button className="flex flex-col items-center justify-center gap-0.5 py-1">
-      <div className={active ? "" : "text-white/85"} style={active ? { color: YELLOW } : {}}>{icon}</div>
-      <div className="text-[10px] font-bold" style={active ? { color: YELLOW } : { color: "rgba(255,255,255,0.85)" }}>
-        {label}
-      </div>
-    </button>
   );
 }
