@@ -1,0 +1,71 @@
+export const trip = {
+  id: 'almaty-nature-3n4d',
+  title: '알마티 자연여행 3박 4일',
+  status: '진행 중',
+  startDate: '2025.06.20',
+  endDate: '2025.06.23',
+  placeCount: 12,
+  reservationCount: 2,
+  driverConnected: true,
+}
+
+export const places = [
+  {
+    id: 'chimbulak',
+    name: '침불락',
+    nameEn: 'Chimbulak',
+    x: 295,
+    y: 92,
+    visited: true,
+    labelSide: 'left',
+  },
+  {
+    id: 'almaty',
+    name: '알마티',
+    nameEn: 'Almaty',
+    x: 128,
+    y: 178,
+    isCity: true,
+  },
+  {
+    id: 'kolsai',
+    name: '콜사이 호수',
+    nameEn: 'Kolsai Lakes',
+    x: 322,
+    y: 198,
+    visited: true,
+    labelSide: 'left',
+  },
+  {
+    id: 'charyn',
+    name: '차른캐년',
+    nameEn: 'Charyn Canyon',
+    x: 92,
+    y: 308,
+    selected: true,
+    rating: 4.9,
+    reviewCount: 230,
+    distanceText: '알마티에서 차로 3시간 30분 (195km)',
+    tags: ['자연 절경', '트래킹 가능'],
+  },
+  {
+    id: 'kaindy',
+    name: '카인디 호수',
+    nameEn: 'Kaindy Lake',
+    x: 238,
+    y: 322,
+    visited: true,
+  },
+]
+
+export const route = [
+  { x: 295, y: 92 },
+  { x: 220, y: 130 },
+  { x: 128, y: 178 },
+  { x: 110, y: 240 },
+  { x: 92, y: 308 },
+  { x: 165, y: 330 },
+  { x: 238, y: 322 },
+  { x: 295, y: 260 },
+  { x: 322, y: 198 },
+]

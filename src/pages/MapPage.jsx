@@ -1,125 +1,47 @@
-import { useMemo, useRef, useState } from 'react'
-import MapCanvas from '@/components/MapCanvas'
-import TopBar from '@/components/TopBar'
-import FilterChips from '@/components/FilterChips'
-import BottomSheet from '@/components/BottomSheet'
-import PlaceList from '@/components/PlaceList'
-import PlaceDetail from '@/components/PlaceDetail'
-import MapControls from '@/components/MapControls'
-import { PLACES, FILTERS } from '@/data/places'
+import { useState } from 'react'
+import TopBar from '../components/TopBar'
+import TripSelector from '../components/TripSelector'
+import MapCanvas from '../components/MapCanvas'
+import MapControls from '../components/MapControls'
+import PlaceDetailCard from '../components/PlaceDetailCard'
+import TripSummaryCard from '../components/TripSummaryCard'
+import BottomTabBar from '../components/BottomTabBar'
+import { trip, places } from '../data/trip'
 
 export default function MapPage() {
-  const [places, setPlaces] = useState(PLACES)
-  const [filter, setFilter] = useState('all')
-  const [query, setQuery] = useState('')
-  const [activeId, setActiveId] = useState(null)
-  const [sheetSnap, setSheetSnap] = useState('half')
-  const [showRoute, setShowRoute] = useState(true)
-  const mapRef = useRef(null)
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    return places.filter((p) => {
-      if (filter === 'visited' && p.status !== 'visited') return false
-      if (filter === 'wishlist' && p.status !== 'wishlist') return false
-      if (!q) return true
-      return (
-        p.name.toLowerCase().includes(q) ||
-        p.country.toLowerCase().includes(q)
-      )
-    })
-  }, [places, filter, query])
-
-  const stats = useMemo(() => {
-    const visited = places.filter((p) => p.status === 'visited')
-    const countries = new Set(visited.map((p) => p.country)).size
-    return { total: places.length, visited: visited.length, countries }
-  }, [places])
-
-  const routeIds = useMemo(
-    () => (showRoute ? places.filter((p) => p.status === 'visited').map((p) => p.id) : []),
-    [places, showRoute],
-  )
-
-  const activePlace = activeId ? places.find((p) => p.id === activeId) : null
-
-  const handleSelectPlace = (id) => {
-    setActiveId(id)
-    setSheetSnap('half')
-  }
-
-  const handleToggleStatus = () => {
-    if (!activePlace) return
-    setPlaces((list) =>
-      list.map((p) =>
-        p.id === activePlace.id
-          ? {
-              ...p,
-              status: p.status === 'visited' ? 'wishlist' : 'visited',
-              trips: p.status === 'visited' ? p.trips : Math.max(p.trips, 1),
-            }
-          : p,
-      ),
-    )
-  }
+  const [selectedId, setSelectedId] = useState('charyn')
+  const [activeTab, setActiveTab] = useState('home')
+  const selected = places.find((p) => p.id === selectedId && !p.isCity)
 
   return (
-    <div className="relative w-full h-[100svh] bg-map-bg overflow-hidden font-sans">
-      <MapCanvas
-        ref={mapRef}
-        places={filtered}
-        activePlaceId={activeId}
-        onSelectPlace={handleSelectPlace}
-        routeIds={routeIds}
-      />
+    <div
+      className="h-full w-full max-w-[440px] mx-auto bg-surface-subtle flex flex-col"
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+    >
+      <TopBar />
 
-      <TopBar
-        query={query}
-        onQueryChange={setQuery}
-        onMenuClick={() => setSheetSnap(sheetSnap === 'full' ? 'half' : 'full')}
-        stats={stats}
-      />
+      <main className="relative flex-1 overflow-hidden">
+        <div className="absolute inset-0">
+          <MapCanvas selectedId={selectedId} onSelect={setSelectedId} />
+        </div>
 
-      <FilterChips
-        filters={FILTERS}
-        value={filter}
-        onChange={setFilter}
-        places={places}
-      />
+        <div className="absolute top-3 left-3 z-overlay">
+          <TripSelector title={trip.title} />
+        </div>
 
-      <MapControls
-        onZoomIn={() => mapRef.current?.zoomBy(1.4)}
-        onZoomOut={() => mapRef.current?.zoomBy(1 / 1.4)}
-        onRecenter={() => {
-          setActiveId(null)
-          mapRef.current?.fit()
-        }}
-        onToggleLayer={() => setShowRoute((v) => !v)}
-        layerActive={showRoute}
-      />
+        <MapControls />
 
-      <BottomSheet snap={sheetSnap} onSnapChange={setSheetSnap}>
-        {activePlace ? (
-          <PlaceDetail
-            place={activePlace}
-            onBack={() => setActiveId(null)}
-            onToggleStatus={handleToggleStatus}
-          />
-        ) : (
-          <PlaceList
-            places={filtered}
-            activeId={activeId}
-            onSelect={handleSelectPlace}
-            headline={
-              filter === 'visited'
-                ? '다녀온 곳'
-                : filter === 'wishlist'
-                ? '가고 싶은 곳'
-                : '내 여행 지도'
-            }
-          />
-        )}
-      </BottomSheet>
+        <div className="absolute left-0 right-0 bottom-0 z-sheet px-3 pb-3 pt-2 flex flex-col gap-2 pointer-events-none">
+          <div className="pointer-events-auto">
+            <PlaceDetailCard place={selected} onClose={() => setSelectedId(null)} />
+          </div>
+          <div className="pointer-events-auto">
+            <TripSummaryCard trip={trip} />
+          </div>
+        </div>
+      </main>
+
+      <BottomTabBar active={activeTab} onChange={setActiveTab} />
     </div>
   )
 }
