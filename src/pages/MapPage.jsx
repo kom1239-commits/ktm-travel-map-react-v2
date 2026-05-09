@@ -6,6 +6,7 @@ import {
   MapPinned, CalendarCheck, Route, Flag,
   Mountain, Waves, Landmark,
 } from "lucide-react";
+import PlaceCard from '../components/cards/PlaceCard'
 
 const YELLOW = "#F4C400";
 const NAVY = "#0E2D50";
@@ -127,56 +128,7 @@ export default function MapPage() {
         </div>
 
         {/* ============ 4. 차른캐년 상세 카드 ============ */}
-        <section className="flex-shrink-0 mx-3 -mt-4 z-40 rounded-3xl bg-white px-4 pt-3 pb-4 shadow-2xl">
-          <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-black/15" />
-
-          <div className="flex gap-3">
-            <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-2xl">
-              <img src="https://images.unsplash.com/photo-1570126618953-d437176e8c79?auto=format&fit=crop&w=400&q=80"
-                   alt="Charyn Canyon" className="h-full w-full object-cover" />
-              <button className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-white/95 shadow">
-                <Bookmark size={14} />
-              </button>
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-2">
-                <h2 className="text-[20px] font-black tracking-tight">차른캐년</h2>
-                <button className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#111923] text-white">
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="mt-1 flex items-center gap-1.5 text-[14px] font-bold">
-                <Star size={15} fill={YELLOW} color={YELLOW} />
-                <span>4.9</span>
-                <span className="text-black/55 font-medium">(230)</span>
-              </div>
-
-              <div className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-black/65">
-                <Car size={14} />
-                <span>알마티에서 3시간 30분 (195km)</span>
-              </div>
-
-              <div className="mt-2 flex gap-1.5 flex-wrap">
-                <span className="rounded-full bg-black/[0.06] px-2.5 py-1 text-[11px] font-semibold text-black/65">자연 명소</span>
-                <span className="rounded-full bg-black/[0.06] px-2.5 py-1 text-[11px] font-semibold text-black/65">트레킹 가능</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3 grid grid-cols-2 gap-2.5">
-            <button className="flex h-[44px] items-center justify-center gap-1.5 rounded-2xl border border-black/10 bg-white text-[14px] font-bold">
-              <MessageCircle size={18} />
-              기사 문의
-            </button>
-            <button className="flex h-[44px] items-center justify-center gap-1.5 rounded-2xl text-[14px] font-bold text-black"
-                    style={{ backgroundColor: YELLOW }}>
-              <Plus size={20} />
-              일정에 추가
-            </button>
-          </div>
-        </section>
+        <PlaceCard />
 
         {/* ============ 5. 진행중 여행 카드 ============ */}
         <section className="flex-shrink-0 mx-3 mt-2 z-30 rounded-2xl bg-white px-3 py-2.5 shadow-md">
