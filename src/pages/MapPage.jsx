@@ -1,259 +1,453 @@
 import React from "react";
 import {
-  Menu, Search, Bell, Crosshair, Layers, SlidersHorizontal,
-  Navigation, X, Star, Car, MessageCircle, Plus,
-  Map, Heart, Bookmark, User, Home, ChevronRight, ChevronDown,
-  MapPinned, CalendarCheck, Route, Flag,
-  Mountain, Waves, Landmark,
+  Menu,
+  Search,
+  Bell,
+  Crosshair,
+  Layers,
+  SlidersHorizontal,
+  Navigation,
+  X,
+  Star,
+  Car,
+  MessageCircle,
+  Plus,
+  Map,
+  Heart,
+  Bookmark,
+  User,
+  Home,
+  ChevronRight,
+  ChevronDown,
+  MapPinned,
+  CalendarCheck,
+  Route,
+  Flag,
+  Mountain,
+  Waves,
+  Landmark,
 } from "lucide-react";
 
 const YELLOW = "#F4C400";
 const NAVY = "#0E2D50";
 
 const places = [
-  { id: "shymbulak", nameKo: "침블락", nameEn: "Chimbulak", x: "55%", y: "15%", type: "mountain", color: "#2FA85A" },
-  { id: "kolsai", nameKo: "콜사이 호수", nameEn: "Kolsai Lakes", x: "70%", y: "40%", type: "lake", color: "#2B96A5" },
-  { id: "kaindy", nameKo: "카인디 호수", nameEn: "Kaindy Lake", x: "60%", y: "75%", type: "lake", color: "#2B96A5" },
-  { id: "charyn", nameKo: "차른캐년", nameEn: "Charyn Canyon", x: "28%", y: "70%", type: "canyon", color: "#C97816" },
+  {
+    id: "almaty",
+    nameKo: "알마티",
+    nameEn: "Almaty",
+    x: "28%",
+    y: "39%",
+    type: "city",
+  },
+  {
+    id: "shymbulak",
+    nameKo: "침블락",
+    nameEn: "Chimbulak",
+    x: "53%",
+    y: "25%",
+    type: "mountain",
+    color: "#2FA85A",
+  },
+  {
+    id: "charyn",
+    nameKo: "차른캐년",
+    nameEn: "Charyn Canyon",
+    x: "30%",
+    y: "64%",
+    type: "canyon",
+    color: "#C97816",
+  },
+  {
+    id: "kolsai",
+    nameKo: "콜사이 호수",
+    nameEn: "Kolsai Lakes",
+    x: "69%",
+    y: "51%",
+    type: "lake",
+    color: "#2B96A5",
+  },
+  {
+    id: "kaindy",
+    nameKo: "카인디 호수",
+    nameEn: "Kaindy Lake",
+    x: "61%",
+    y: "70%",
+    type: "lake",
+    color: "#2B96A5",
+  },
 ];
 
 export default function MapPage() {
   return (
     <div className="min-h-screen bg-[#e9ece7] flex justify-center">
-      <main className="relative flex flex-col w-full max-w-[430px] min-h-screen bg-[#f7f4ec] text-[#111] overflow-hidden">
+      <main className="relative min-h-screen w-full max-w-[430px] overflow-hidden bg-[#f7f4ec] text-[#111]">
+        {/* Map background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[#f4f1e9]" />
 
-        {/* ============ 1. 상태바 ============ */}
-        <div className="flex items-center justify-between px-7 pt-3 pb-1 text-[15px] font-bold flex-shrink-0">
-          <span>9:41</span>
-          <div className="flex items-center gap-1.5">
-            <span className="h-3 w-4 rounded-[2px] border-[1.5px] border-black" />
-            <span className="h-3 w-5 rounded-[2px] border-[1.5px] border-black" />
-            <span className="h-3 w-6 rounded-[2px] border-[1.5px] border-black" />
-          </div>
-        </div>
-
-        {/* ============ 2. 헤더 ============ */}
-        <header className="flex-shrink-0 px-4 pt-3 pb-3 z-30">
-          <div className="flex items-start justify-between gap-2">
-            <button className="grid h-[48px] w-[48px] place-items-center rounded-2xl bg-white shadow-md">
-              <Menu size={24} strokeWidth={2.5} />
-            </button>
-
-            <div className="flex-1 pt-1 pl-1">
-              <div className="text-[26px] font-black italic leading-none tracking-tight" style={{ color: YELLOW }}>
-                KTM
-              </div>
-              <div className="mt-1 text-[9px] font-bold tracking-[0.12em] text-black/75 whitespace-nowrap">
-                KAZAKHSTAN TRAVEL MANAGER
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button className="grid h-[48px] w-[48px] place-items-center rounded-2xl bg-white shadow-md">
-                <Search size={22} strokeWidth={2.5} />
-              </button>
-              <button className="relative grid h-[48px] w-[48px] place-items-center rounded-2xl bg-white shadow-md">
-                <Bell size={22} strokeWidth={2.5} />
-                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full" style={{ backgroundColor: YELLOW }} />
-              </button>
-            </div>
-          </div>
-        </header>
-
-        {/* ============ 3. 지도 영역 (핵심: flex-1로 남은 공간 다 차지) ============ */}
-        <div className="relative flex-1 mx-0 overflow-hidden">
-
-          {/* 지도 배경 */}
-          <div className="absolute inset-0 bg-[#f4f1e9]">
-            <div className="absolute inset-0 opacity-60">
-              <div className="absolute -left-20 top-10 h-[260px] w-[540px] rotate-[-12deg] rounded-full bg-[#e5dccd] blur-2xl" />
-              <div className="absolute -right-28 top-40 h-[380px] w-[620px] rotate-[18deg] rounded-full bg-[#d8e4d1] blur-2xl" />
-              <div className="absolute left-4 top-[200px] h-[330px] w-[600px] rotate-[-18deg] rounded-full bg-[#d2dcc9] blur-xl" />
-            </div>
+          {/* Real map 느낌의 부드러운 배경 */}
+          <div className="absolute inset-0 opacity-80">
+            <div className="absolute -left-20 top-10 h-[260px] w-[540px] rotate-[-12deg] rounded-full bg-[#e5dccd] blur-2xl" />
+            <div className="absolute -right-28 top-40 h-[380px] w-[620px] rotate-[18deg] rounded-full bg-[#d8e4d1] blur-2xl" />
+            <div className="absolute left-4 top-[310px] h-[430px] w-[600px] rotate-[-18deg] rounded-full bg-[#d2dcc9] blur-xl" />
+            <div className="absolute left-[-80px] top-[530px] h-[290px] w-[550px] rotate-[9deg] rounded-full bg-[#e2dfd1] blur-2xl" />
           </div>
 
-          {/* "내 여행" 다크 카드 (지도 위 좌측 상단) */}
-          <button className="absolute left-4 top-3 z-30 flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-white shadow-xl"
-                  style={{ backgroundColor: "#111923" }}>
-            <div className="grid h-9 w-9 place-items-center rounded-lg border border-[#F4C400]/45" style={{ color: YELLOW }}>
-              <MapPinned size={18} />
-            </div>
-            <div>
-              <div className="text-[10px] font-medium text-white/60">내 여행</div>
-              <div className="text-[14px] font-bold tracking-tight">알마티 자연여행 3박 4일</div>
-            </div>
-            <ChevronDown size={18} className="text-white/80" />
-          </button>
-
-          {/* 우측 도구 버튼들 */}
-          <div className="absolute right-4 top-3 z-30 flex flex-col gap-2.5">
-            <ToolButton icon={<Crosshair size={22} strokeWidth={2.5} />} />
-            <ToolButton icon={<Layers size={22} strokeWidth={2.5} />} />
-            <ToolButton icon={<SlidersHorizontal size={22} strokeWidth={2.5} />} />
-          </div>
-
-          {/* 경로 SVG */}
-          <svg className="pointer-events-none absolute inset-0 h-full w-full z-10" viewBox="0 0 400 600" preserveAspectRatio="none">
-            <path d="M105 320 C130 290 160 250 200 200 C220 175 220 150 220 100"
-                  fill="none" stroke={YELLOW} strokeWidth="3.5" strokeLinecap="round" />
-            <path d="M105 320 C95 380 110 440 145 480 C175 510 220 540 270 480"
-                  fill="none" stroke={YELLOW} strokeWidth="3.5" strokeLinecap="round" />
-            <path d="M270 480 C300 440 305 400 280 360 C260 330 200 340 130 420"
-                  fill="none" stroke={YELLOW} strokeWidth="3.5" strokeLinecap="round" />
+          {/* 지도 선 느낌 */}
+          <svg
+            className="absolute inset-0 h-full w-full opacity-30"
+            viewBox="0 0 430 900"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M-40 180 C80 150 150 250 260 190 C330 150 390 170 470 130"
+              stroke="#b8a995"
+              strokeWidth="2"
+              fill="none"
+            />
+            <path
+              d="M-20 390 C100 350 170 440 290 400 C360 378 390 360 470 390"
+              stroke="#b8a995"
+              strokeWidth="2"
+              fill="none"
+            />
+            <path
+              d="M80 0 C120 150 80 280 130 420 C170 530 125 680 180 900"
+              stroke="#c7a39a"
+              strokeWidth="2"
+              fill="none"
+            />
+            <path
+              d="M300 0 C270 140 340 260 300 390 C270 500 340 650 300 900"
+              stroke="#9db6c2"
+              strokeWidth="2"
+              fill="none"
+            />
           </svg>
 
-          {/* 알마티 라벨 + 점 */}
-          <div className="absolute left-[20%] top-[52%] z-20">
-            <div className="text-[20px] font-semibold leading-none">Almaty</div>
-            <div className="mt-0.5 text-[15px] font-bold">알마티</div>
-          </div>
-          <div className="absolute left-[24%] top-[57%] z-30 -translate-x-1/2 -translate-y-1/2">
-            <div className="h-5 w-5 rounded-full border-[4px] border-white shadow-lg" style={{ backgroundColor: NAVY }} />
-          </div>
-
-          {/* 차 마커 */}
-          <div className="absolute left-[40%] top-[48%] z-30 grid h-9 w-9 place-items-center rounded-full bg-white shadow-lg">
-            <Car size={18} />
-          </div>
-
-          {/* POI 핀들 */}
-          {places.map((spot) => <PlacePin key={spot.id} spot={spot} />)}
-
-          {/* 우측 하단 네비게이션 버튼 */}
-          <button className="absolute right-5 bottom-5 z-40 grid h-[56px] w-[56px] place-items-center rounded-full text-white shadow-2xl"
-                  style={{ backgroundColor: NAVY }}>
-            <Navigation size={24} fill="white" />
-          </button>
+          <div className="absolute inset-0 bg-white/20" />
         </div>
 
-        {/* ============ 4. 차른캐년 상세 카드 ============ */}
-        <section className="flex-shrink-0 mx-3 -mt-4 z-40 rounded-3xl bg-white px-4 pt-3 pb-4 shadow-2xl">
-          <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-black/15" />
+        {/* Route line */}
+        <svg
+          className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+          viewBox="0 0 430 900"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M118 350 C160 326 188 290 230 230 C248 205 253 178 254 152"
+            fill="none"
+            stroke={YELLOW}
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M118 350 C105 435 120 512 151 575 C177 625 221 665 263 712"
+            fill="none"
+            stroke={YELLOW}
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M263 712 C315 663 341 604 343 535 C345 500 338 465 326 430"
+            fill="none"
+            stroke={YELLOW}
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
 
-          <div className="flex gap-3">
-            <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-2xl">
-              <img src="https://images.unsplash.com/photo-1570126618953-d437176e8c79?auto=format&fit=crop&w=400&q=80"
-                   alt="Charyn Canyon" className="h-full w-full object-cover" />
-              <button className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-white/95 shadow">
-                <Bookmark size={14} />
+        {/* Status bar */}
+        <div className="relative z-40 flex h-9 items-center justify-between px-7 pt-2 text-[15px] font-black">
+          <span>9:41</span>
+          <div className="flex items-center gap-1.5">
+            <span className="h-3 w-4 rounded-[3px] border-2 border-black" />
+            <span className="h-3 w-5 rounded-[3px] border-2 border-black" />
+            <span className="h-3 w-6 rounded-[3px] border-2 border-black" />
+          </div>
+        </div>
+
+        {/* Header */}
+        <header className="relative z-40 px-5 pt-4">
+          <div className="flex items-start justify-between">
+            <button className="grid h-[52px] w-[52px] place-items-center rounded-2xl bg-white/95 shadow-[0_10px_26px_rgba(0,0,0,0.12)]">
+              <Menu size={27} strokeWidth={3} />
+            </button>
+
+            <div className="ml-3 flex-1 pt-1">
+              <div className="text-[30px] font-black italic leading-none tracking-[-0.07em] text-[#F4C400]">
+                KTM
+              </div>
+              <div className="mt-1 text-[13px] font-black tracking-[-0.02em] text-black/75">
+                카자흐스탄 여행 관리자
+              </div>
+            </div>
+
+            <div className="flex gap-2.5">
+              <button className="grid h-[52px] w-[52px] place-items-center rounded-2xl bg-white/95 shadow-[0_10px_26px_rgba(0,0,0,0.12)]">
+                <Search size={28} strokeWidth={3} />
+              </button>
+              <button className="relative grid h-[52px] w-[52px] place-items-center rounded-2xl bg-white/95 shadow-[0_10px_26px_rgba(0,0,0,0.12)]">
+                <Bell size={26} strokeWidth={2.7} />
+                <span className="absolute right-[12px] top-[10px] h-2.5 w-2.5 rounded-full bg-[#F4C400]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Current trip card */}
+          <button
+            className="mt-4 flex h-[78px] w-full items-center justify-between rounded-[20px] px-5 text-left text-white shadow-[0_18px_35px_rgba(0,0,0,0.18)]"
+            style={{ backgroundColor: "#111923" }}
+          >
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="grid h-[44px] w-[44px] shrink-0 place-items-center rounded-2xl border border-[#F4C400]/55 text-[#F4C400]">
+                <MapPinned size={25} />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[13px] font-semibold text-white/55">내 여행</div>
+                <div className="truncate text-[20px] font-black tracking-[-0.04em]">
+                  알마티 자연여행 3박 4일
+                </div>
+              </div>
+            </div>
+            <ChevronDown size={24} className="shrink-0 text-white/80" />
+          </button>
+        </header>
+
+        {/* Right buttons */}
+        <div className="absolute right-5 top-[250px] z-40 flex flex-col gap-3">
+          <MapTool icon={<Crosshair size={25} strokeWidth={2.8} />} />
+          <MapTool icon={<Layers size={25} strokeWidth={2.8} />} />
+          <MapTool icon={<SlidersHorizontal size={25} strokeWidth={2.8} />} />
+        </div>
+
+        {/* Map labels and pins */}
+        <div className="absolute inset-0 z-20">
+          <div className="absolute left-[26%] top-[38%] -translate-x-1/2">
+            <div className="text-[24px] font-semibold leading-none">Almaty</div>
+            <div className="mt-1 text-[18px] font-bold">알마티</div>
+          </div>
+
+          <div className="absolute left-[28%] top-[44%] -translate-x-1/2 -translate-y-1/2">
+            <div className="h-[23px] w-[23px] rounded-full border-[5px] border-white bg-[#0E2D50] shadow-xl shadow-black/25" />
+          </div>
+
+          <div className="absolute left-[40%] top-[35.5%] grid h-9 w-9 place-items-center rounded-full bg-white shadow-xl shadow-black/15">
+            <Car size={19} />
+          </div>
+
+          {places
+            .filter((p) => p.id !== "almaty")
+            .map((spot) => (
+              <PlacePin key={spot.id} spot={spot} />
+            ))}
+        </div>
+
+        {/* Floating navigation */}
+        <button
+          className="absolute right-6 top-[58%] z-40 grid h-[62px] w-[62px] place-items-center rounded-full text-white shadow-[0_14px_35px_rgba(0,0,0,0.28)]"
+          style={{ backgroundColor: NAVY }}
+        >
+          <Navigation size={29} fill="white" />
+        </button>
+
+        {/* Detail Card - 비율 조정 */}
+        <section className="absolute left-4 right-4 bottom-[188px] z-50 rounded-[24px] bg-white/95 px-4 pb-4 pt-3 shadow-[0_20px_50px_rgba(0,0,0,0.18)] backdrop-blur-md">
+          <div className="mx-auto mb-3 h-1.5 w-[70px] rounded-full bg-black/15" />
+
+          <div className="flex gap-4">
+            <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-[20px] bg-orange-100">
+              <img
+                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80"
+                alt="Charyn Canyon"
+                className="h-full w-full object-cover"
+              />
+              <button className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-[#0E2D50]/90 text-white">
+                <Bookmark size={18} />
               </button>
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-2">
-                <h2 className="text-[20px] font-black tracking-tight">차른캐년</h2>
-                <button className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#111923] text-white">
-                  <X size={18} />
+                <div className="min-w-0">
+                  <h2 className="truncate text-[24px] font-black tracking-[-0.06em]">
+                    차른캐년
+                  </h2>
+
+                  <div className="mt-1.5 flex items-center gap-1.5 text-[16px] font-black">
+                    <Star size={18} fill={YELLOW} color={YELLOW} />
+                    <span>4.9</span>
+                    <span className="font-semibold text-black/55">(230)</span>
+                  </div>
+                </div>
+
+                <button className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-full bg-[#111923] text-white">
+                  <X size={26} />
                 </button>
               </div>
 
-              <div className="mt-1 flex items-center gap-1.5 text-[14px] font-bold">
-                <Star size={15} fill={YELLOW} color={YELLOW} />
-                <span>4.9</span>
-                <span className="text-black/55 font-medium">(230)</span>
-              </div>
-
-              <div className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-black/65">
-                <Car size={14} />
+              <div className="mt-2.5 flex items-start gap-2 text-[14px] font-bold leading-snug text-black/65">
+                <Car size={18} className="mt-0.5 shrink-0" />
                 <span>알마티에서 3시간 30분 (195km)</span>
               </div>
 
-              <div className="mt-2 flex gap-1.5 flex-wrap">
-                <span className="rounded-full bg-black/[0.06] px-2.5 py-1 text-[11px] font-semibold text-black/65">자연 명소</span>
-                <span className="rounded-full bg-black/[0.06] px-2.5 py-1 text-[11px] font-semibold text-black/65">트레킹 가능</span>
+              <div className="mt-2.5 flex gap-2">
+                <span className="rounded-full bg-black/[0.06] px-3 py-1.5 text-[12px] font-bold text-black/60">
+                  자연 명소
+                </span>
+                <span className="rounded-full bg-black/[0.06] px-3 py-1.5 text-[12px] font-bold text-black/60">
+                  트레킹 가능
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2.5">
-            <button className="flex h-[44px] items-center justify-center gap-1.5 rounded-2xl border border-black/10 bg-white text-[14px] font-bold">
-              <MessageCircle size={18} />
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <button className="flex h-[50px] items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white text-[15px] font-black shadow-sm">
+              <MessageCircle size={21} />
               기사 문의
             </button>
-            <button className="flex h-[44px] items-center justify-center gap-1.5 rounded-2xl text-[14px] font-bold text-black"
-                    style={{ backgroundColor: YELLOW }}>
-              <Plus size={20} />
+            <button
+              className="flex h-[50px] items-center justify-center gap-2 rounded-2xl text-[15px] font-black text-black shadow-sm"
+              style={{ backgroundColor: YELLOW }}
+            >
+              <Plus size={23} />
               일정에 추가
             </button>
           </div>
         </section>
 
-        {/* ============ 5. 진행중 여행 카드 ============ */}
-        <section className="flex-shrink-0 mx-3 mt-2 z-30 rounded-2xl bg-white px-3 py-2.5 shadow-md">
+        {/* Trip Card - 겹치지 않게 축소 */}
+        <section className="absolute left-4 right-4 bottom-[84px] z-40 rounded-[22px] bg-white/95 px-4 py-3 shadow-[0_14px_35px_rgba(0,0,0,0.13)]">
           <div className="flex items-center gap-3">
-            <div className="relative h-[48px] w-[48px] shrink-0 overflow-hidden rounded-full">
-              <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=200&q=80"
-                   alt="" className="h-full w-full object-cover" />
-              <div className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full" style={{ backgroundColor: YELLOW }}>
-                <Flag size={10} className="text-white" />
+            <div className="relative h-[58px] w-[58px] shrink-0 overflow-hidden rounded-full">
+              <img
+                src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=220&q=80"
+                alt="Kolsai"
+                className="h-full w-full object-cover"
+              />
+              <div
+                className="absolute right-0 top-0 grid h-6 w-6 place-items-center rounded-full"
+                style={{ backgroundColor: YELLOW }}
+              >
+                <Flag size={13} className="text-white" />
               </div>
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <h3 className="truncate text-[14px] font-black tracking-tight">알마티 자연여행 3박 4일</h3>
-                <span className="shrink-0 rounded-full bg-[#DCF6E6] px-1.5 py-0.5 text-[9px] font-bold text-[#2D8A57]">진행 중</span>
+              <div className="flex items-center gap-2">
+                <h3 className="truncate text-[18px] font-black tracking-[-0.05em]">
+                  알마티 자연여행 3박 4일
+                </h3>
+                <span className="shrink-0 rounded-full bg-[#DCF6E6] px-2 py-1 text-[11px] font-black text-[#2D8A57]">
+                  진행 중
+                </span>
               </div>
-              <p className="mt-0.5 text-[11px] font-medium text-black/55">2025.06.20 ~ 2025.06.23</p>
-              <div className="mt-1 flex items-center gap-3 text-[10px] font-bold text-black/70">
-                <span className="flex items-center gap-1"><MapPinned size={11} />장소 12</span>
-                <span className="flex items-center gap-1"><CalendarCheck size={11} />예약 2</span>
-                <span className="flex items-center gap-1 text-[#2D8A57]"><Route size={11} />기사 연결됨</span>
+
+              <p className="mt-1 text-[13px] font-bold text-black/55">
+                2025.06.20 ~ 2025.06.23
+              </p>
+
+              <div className="mt-2 flex items-center justify-between text-[12px] font-black text-black/70">
+                <div className="flex items-center gap-1">
+                  <MapPinned size={16} />
+                  장소 12
+                </div>
+                <div className="flex items-center gap-1">
+                  <CalendarCheck size={16} />
+                  예약 2
+                </div>
+                <div className="flex items-center gap-1">
+                  <Route size={16} className="text-[#2D8A57]" />
+                  기사 연결
+                </div>
               </div>
             </div>
 
-            <ChevronRight size={20} className="shrink-0 text-black/60" />
+            <ChevronRight size={27} className="shrink-0 text-black/75" />
           </div>
         </section>
 
-        {/* ============ 6. 하단 탭바 ============ */}
-        <nav className="flex-shrink-0 mt-2 rounded-t-3xl px-4 pb-3 pt-3 text-white" style={{ backgroundColor: NAVY }}>
-          <div className="grid grid-cols-5">
-            <BottomTab active icon={<Home size={22} fill={YELLOW} />} label="홈" />
-            <BottomTab icon={<Map size={22} />} label="지도" />
-            <BottomTab icon={<Heart size={22} />} label="코스" />
-            <BottomTab icon={<Bookmark size={22} />} label="저장" />
-            <BottomTab icon={<User size={22} />} label="내 여행" />
+        {/* Bottom Navigation - 낮게 조정 */}
+        <nav
+          className="absolute bottom-0 left-0 right-0 z-50 rounded-t-[27px] px-4 pb-4 pt-3 text-white shadow-[0_-16px_40px_rgba(0,0,0,0.25)]"
+          style={{ backgroundColor: NAVY }}
+        >
+          <div className="grid grid-cols-5 items-center">
+            <BottomTab active icon={<Home size={26} fill={YELLOW} />} label="홈" />
+            <BottomTab icon={<Map size={26} />} label="지도" />
+            <BottomTab icon={<Heart size={26} />} label="코스" />
+            <BottomTab icon={<Bookmark size={25} />} label="저장" />
+            <BottomTab icon={<User size={26} />} label="내 여행" />
           </div>
+
+          <div className="mx-auto mt-3 h-1.5 w-[125px] rounded-full bg-white/90" />
         </nav>
       </main>
     </div>
   );
 }
 
-function ToolButton({ icon }) {
+function MapTool({ icon }) {
   return (
-    <button className="grid h-[44px] w-[44px] place-items-center rounded-2xl bg-white shadow-md">
+    <button className="grid h-[52px] w-[52px] place-items-center rounded-2xl bg-white/95 shadow-[0_10px_24px_rgba(0,0,0,0.14)]">
       {icon}
     </button>
   );
 }
 
 function PlacePin({ spot }) {
+  const isLake = spot.type === "lake";
+  const isMountain = spot.type === "mountain";
+  const isCanyon = spot.type === "canyon";
+
   return (
-    <div className="absolute z-30" style={{ left: spot.x, top: spot.y, transform: "translate(-50%, -50%)" }}>
+    <div
+      className="absolute z-30"
+      style={{
+        left: spot.x,
+        top: spot.y,
+        transform: "translate(-50%, -50%)",
+      }}
+    >
       <div className="flex items-center gap-1.5">
-        <div className="grid h-9 w-9 place-items-center rounded-full border-[3px] border-white text-white shadow-lg"
-             style={{ backgroundColor: spot.color }}>
-          {spot.type === "lake" && <Waves size={16} strokeWidth={2.5} />}
-          {spot.type === "mountain" && <Mountain size={16} strokeWidth={2.5} />}
-          {spot.type === "canyon" && <Landmark size={15} strokeWidth={2.5} />}
+        <div
+          className="grid h-[38px] w-[38px] place-items-center rounded-full border-[4px] border-white text-white shadow-[0_8px_18px_rgba(0,0,0,0.22)]"
+          style={{ backgroundColor: spot.color }}
+        >
+          {isLake && <Waves size={20} strokeWidth={3} />}
+          {isMountain && <Mountain size={20} strokeWidth={3} />}
+          {isCanyon && <Landmark size={19} strokeWidth={3} />}
         </div>
-        <div className="leading-tight">
-          <div className="whitespace-nowrap text-[11px] font-bold text-black">{spot.nameEn}</div>
-          <div className="whitespace-nowrap text-[10px] font-semibold text-black/70">{spot.nameKo}</div>
+
+        <div className="leading-tight drop-shadow-sm">
+          <div className="whitespace-nowrap text-[12px] font-black text-black">
+            {spot.nameEn}
+          </div>
+          <div className="whitespace-nowrap text-[11px] font-black text-black/75">
+            {spot.nameKo}
+          </div>
         </div>
       </div>
-      <div className="mx-auto mt-0.5 h-2.5 w-2.5 rounded-full border-2 border-white" style={{ backgroundColor: NAVY }} />
+
+      <div className="mx-auto mt-1 h-3.5 w-3.5 rounded-full border-[3px] border-white bg-[#0E2D50] shadow-md" />
     </div>
   );
 }
 
 function BottomTab({ icon, label, active = false }) {
   return (
-    <button className="flex flex-col items-center justify-center gap-0.5 py-1">
-      <div className={active ? "" : "text-white/85"} style={active ? { color: YELLOW } : {}}>{icon}</div>
-      <div className="text-[10px] font-bold" style={active ? { color: YELLOW } : { color: "rgba(255,255,255,0.85)" }}>
+    <button className="flex flex-col items-center justify-center gap-1">
+      <div className={active ? "text-[#F4C400]" : "text-white/90"}>{icon}</div>
+      <div
+        className={`text-[12px] font-black ${
+          active ? "text-[#F4C400]" : "text-white/90"
+        }`}
+      >
         {label}
       </div>
     </button>
