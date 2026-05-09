@@ -1,45 +1,37 @@
-import { Plus, Minus, Compass, Layers } from 'lucide-react'
+import { Crosshair, Layers, SlidersHorizontal, Navigation } from 'lucide-react'
 
-export default function MapControls({ onZoomIn, onZoomOut, onRecenter, onToggleLayer, layerActive }) {
-  return (
-    <div
-      className="absolute right-3 z-overlay flex flex-col gap-2"
-      style={{ top: 'calc(env(safe-area-inset-top) + 144px)' }}
-    >
-      <ControlButton onClick={onZoomIn} aria-label="확대">
-        <Plus size={18} />
-      </ControlButton>
-      <ControlButton onClick={onZoomOut} aria-label="축소">
-        <Minus size={18} />
-      </ControlButton>
-      <div className="h-2" />
-      <ControlButton onClick={onRecenter} aria-label="처음 위치">
-        <Compass size={18} />
-      </ControlButton>
-      <ControlButton
-        onClick={onToggleLayer}
-        aria-label="경로 레이어"
-        active={layerActive}
-      >
-        <Layers size={18} />
-      </ControlButton>
-    </div>
-  )
-}
-
-function ControlButton({ children, active, ...props }) {
+function CircleButton({ children, label, className = '' }) {
   return (
     <button
-      type="button"
-      className={
-        'size-10 grid place-items-center rounded-full border shadow-card active:scale-95 transition-transform ' +
-        (active
-          ? 'bg-ktm-orange text-white border-ktm-orange'
-          : 'bg-surface text-ink border-surface-border')
-      }
-      {...props}
+      aria-label={label}
+      className={`grid place-items-center w-11 h-11 rounded-full bg-white shadow-card text-ktm-navy active:scale-95 transition-transform ${className}`}
     >
       {children}
     </button>
+  )
+}
+
+export default function MapControls() {
+  return (
+    <>
+      <div className="absolute top-3 right-3 flex flex-col gap-2 z-overlay">
+        <CircleButton label="recenter">
+          <Crosshair size={18} strokeWidth={2.2} />
+        </CircleButton>
+        <CircleButton label="layers">
+          <Layers size={18} strokeWidth={2.2} />
+        </CircleButton>
+        <CircleButton label="filter">
+          <SlidersHorizontal size={18} strokeWidth={2.2} />
+        </CircleButton>
+      </div>
+
+      <button
+        aria-label="navigate"
+        className="absolute bottom-3 right-3 z-overlay grid place-items-center w-12 h-12 rounded-full bg-ktm-yellow text-ktm-navy shadow-fab active:scale-95 transition-transform"
+      >
+        <Navigation size={20} strokeWidth={2.4} className="-rotate-12 translate-x-[1px]" fill="#0E2D50" />
+      </button>
+    </>
   )
 }

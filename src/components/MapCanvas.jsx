@@ -1,151 +1,133 @@
-import { useEffect, useImperativeHandle, forwardRef, useMemo } from 'react'
-import { LAND_PATHS } from '@/lib/asiaShapes'
-import { VIEW, project } from '@/lib/projection'
-import { useMapTransform } from '@/hooks/useMapTransform'
+import { places, route } from '../data/trip'
 
-const GRATICULE_LNG = [100, 110, 120, 130, 140]
-const GRATICULE_LAT = [-10, 0, 10, 20, 30, 40]
+function smoothPath(points) {
+  if (points.length < 2) return ''
+  const d = [`M ${points[0].x} ${points[0].y}`]
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] ?? points[i]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[i + 2] ?? p2
+    const cp1x = p1.x + (p2.x - p0.x) / 6
+    const cp1y = p1.y + (p2.y - p0.y) / 6
+    const cp2x = p2.x - (p3.x - p1.x) / 6
+    const cp2y = p2.y - (p3.y - p1.y) / 6
+    d.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`)
+  }
+  return d.join(' ')
+}
 
-const MapCanvas = forwardRef(function MapCanvas(
-  { places, activePlaceId, onSelectPlace, routeIds = [] },
-  ref,
-) {
-  const { containerRef, transform, handlers, zoomBy, focusOn, fit } = useMapTransform({
-    width: VIEW.width,
-    height: VIEW.height,
-  })
+const carPos = { x: 175, y: 152 }
 
-  useImperativeHandle(ref, () => ({ zoomBy, focusOn, fit }), [zoomBy, focusOn, fit])
-
-  // When the active place changes, gently focus the map on it.
-  useEffect(() => {
-    if (!activePlaceId) return
-    const place = places.find((p) => p.id === activePlaceId)
-    if (!place) return
-    const { x, y } = project(place.lng, place.lat)
-    focusOn(x, y, Math.max(transform.scale, 2.2))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePlaceId])
-
-  const projected = useMemo(
-    () => places.map((p) => ({ ...p, ...project(p.lng, p.lat) })),
-    [places],
-  )
-
-  const routePoints = useMemo(() => {
-    const lookup = new Map(projected.map((p) => [p.id, p]))
-    return routeIds.map((id) => lookup.get(id)).filter(Boolean)
-  }, [projected, routeIds])
+export default function MapCanvas({ selectedId, onSelect }) {
+  const path = smoothPath(route)
 
   return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 overflow-hidden touch-none select-none"
-      style={{ background: 'radial-gradient(120% 80% at 50% 0%, #DEEBF4 0%, #C8DDEB 60%, #B7CEDF 100%)' }}
-      {...handlers}
+    <svg
+      viewBox="0 0 400 400"
+      className="w-full h-full block"
+      preserveAspectRatio="xMidYMid slice"
     >
-      <svg
-        width={VIEW.width}
-        height={VIEW.height}
-        viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
-        className="block origin-top-left"
-        style={{
-          transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(${transform.scale})`,
-          transformOrigin: '0 0',
-        }}
-      >
-        {/* Subtle graticule */}
-        <g stroke="#FFFFFF" strokeOpacity="0.35" strokeWidth="0.6">
-          {GRATICULE_LNG.map((lng) => {
-            const a = project(lng, -12)
-            const b = project(lng, 50)
-            return <line key={`lng-${lng}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
-          })}
-          {GRATICULE_LAT.map((lat) => {
-            const a = project(92, lat)
-            const b = project(148, lat)
-            return <line key={`lat-${lat}`} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
-          })}
+      <defs>
+        <pattern id="contour" x="0" y="0" width="36" height="22" patternUnits="userSpaceOnUse">
+          <path d="M0 11 Q 9 4 18 11 T 36 11" stroke="#D6C9AC" strokeWidth="0.6" fill="none" opacity="0.6" />
+        </pattern>
+        <radialGradient id="haze" cx="50%" cy="40%" r="80%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.0" />
+          <stop offset="100%" stopColor="#0E2D50" stopOpacity="0.06" />
+        </radialGradient>
+        <filter id="pinShadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#0E2D50" floodOpacity="0.25" />
+        </filter>
+      </defs>
+
+      <rect width="400" height="400" fill="#EFE8DA" />
+      <rect width="400" height="400" fill="url(#contour)" />
+
+      <path d="M -10 90 Q 80 60 160 110 T 410 80 L 410 -10 L -10 -10 Z" fill="#CFC2A7" opacity="0.55" />
+      <path d="M -10 200 Q 100 170 200 220 T 410 190 L 410 90 Q 320 110 230 80 T -10 95 Z" fill="#B7C9A8" opacity="0.55" />
+      <path d="M -10 320 Q 90 300 180 340 T 410 310 L 410 200 Q 300 230 200 220 T -10 200 Z" fill="#C9D6BD" opacity="0.45" />
+      <path d="M -10 410 L 410 410 L 410 320 Q 320 340 240 330 T -10 320 Z" fill="#D9CFAF" opacity="0.55" />
+
+      <g stroke="#A89970" strokeWidth="0.7" fill="none" opacity="0.55">
+        <path d="M 30 70 Q 110 40 200 70 T 380 60" />
+        <path d="M 20 130 Q 130 100 220 130 T 380 120" />
+        <path d="M 0 240 Q 130 215 240 250 T 400 240" />
+        <path d="M 10 290 Q 130 275 230 295 T 400 285" />
+        <path d="M 0 360 Q 120 345 220 365 T 400 355" />
+      </g>
+
+      <path d="M 250 50 L 270 80 L 300 65 L 320 95 L 345 75 L 365 100" stroke="#8FAA80" strokeWidth="1.2" fill="none" opacity="0.7" />
+      <path d="M 30 300 L 55 320 L 90 305 L 120 335" stroke="#8FAA80" strokeWidth="1.2" fill="none" opacity="0.7" />
+
+      <rect width="400" height="400" fill="url(#haze)" />
+
+      <path d={path} stroke="#D9AE00" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.35" />
+      <path d={path} stroke="#F4C400" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+      <g transform={`translate(${carPos.x} ${carPos.y})`}>
+        <circle r="11" fill="#FFFFFF" stroke="#0E2D50" strokeWidth="1.5" />
+        <g transform="translate(-6 -5)" stroke="#0E2D50" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 7 L2 5 L3 3 L9 3 L10 5 L10 7" />
+          <path d="M0.5 7 L11.5 7" />
+          <circle cx="3" cy="8" r="0.9" fill="#0E2D50" stroke="none" />
+          <circle cx="9" cy="8" r="0.9" fill="#0E2D50" stroke="none" />
         </g>
+      </g>
 
-        {/* Land masses */}
-        <g>
-          {LAND_PATHS.map((d, i) => (
-            <path
-              key={i}
-              d={d}
-              fill="#E8E0D5"
-              stroke="#C9BFAF"
-              strokeWidth="1.2"
-              strokeLinejoin="round"
-            />
-          ))}
-        </g>
-
-        {/* Route line connecting visited places in order */}
-        {routePoints.length > 1 && (
-          <g>
-            <path
-              d={routePoints
-                .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`)
-                .join(' ')}
-              fill="none"
-              stroke="#FF6B00"
-              strokeOpacity="0.85"
-              strokeWidth={2.5}
-              strokeDasharray="6 5"
-              strokeLinecap="round"
-              vectorEffect="non-scaling-stroke"
-            />
-          </g>
-        )}
-
-        {/* Pins */}
-        <g>
-          {projected.map((p) => (
-            <Pin
-              key={p.id}
-              x={p.x}
-              y={p.y}
-              place={p}
-              active={p.id === activePlaceId}
-              onClick={() => onSelectPlace?.(p.id)}
-              scale={transform.scale}
-            />
-          ))}
-        </g>
-      </svg>
-    </div>
-  )
-})
-
-function Pin({ x, y, place, active, onClick, scale }) {
-  const visited = place.status === 'visited'
-  const color = visited ? '#FF6B00' : '#5A5550'
-  const r = active ? 9 : 7
-  // Counter-scale so pins keep visual size as we zoom.
-  const inv = 1 / scale
-  return (
-    <g
-      transform={`translate(${x} ${y}) scale(${inv})`}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => {
-        e.stopPropagation()
-        onClick?.()
-      }}
-      className="cursor-pointer"
-    >
-      {active && (
-        <circle r={r + 8} fill={color} fillOpacity="0.18">
-          <animate attributeName="r" values={`${r + 6};${r + 14};${r + 6}`} dur="2s" repeatCount="indefinite" />
-          <animate attributeName="fill-opacity" values="0.25;0;0.25" dur="2s" repeatCount="indefinite" />
-        </circle>
-      )}
-      <circle r={r + 2} fill="#FFFFFF" />
-      <circle r={r} fill={color} />
-      {visited && <circle r={r - 3} fill="#FFFFFF" fillOpacity="0.85" />}
-    </g>
+      {places.map((p) => (
+        <Pin key={p.id} place={p} active={p.id === selectedId} onClick={() => onSelect?.(p.id)} />
+      ))}
+    </svg>
   )
 }
 
-export default MapCanvas
+function Pin({ place, active, onClick }) {
+  const { x, y, name, nameEn, isCity, labelSide = 'right' } = place
+
+  if (isCity) {
+    return (
+      <g transform={`translate(${x} ${y})`} onClick={onClick} className="cursor-pointer">
+        <circle r="7" fill="#FFFFFF" stroke="#0E2D50" strokeWidth="2.6" />
+        <circle r="2.5" fill="#0E2D50" />
+        <g transform="translate(0 -16)">
+          <text textAnchor="middle" fontSize="13" fontWeight="800" fill="#0E2D50"
+            stroke="#FFFFFF" strokeWidth="3" paintOrder="stroke">
+            Almaty
+          </text>
+          <text y="11" textAnchor="middle" fontSize="10" fontWeight="700" fill="#0E2D50"
+            stroke="#FFFFFF" strokeWidth="2.5" paintOrder="stroke" opacity="0.85">
+            {name}
+          </text>
+        </g>
+      </g>
+    )
+  }
+
+  const fill = active ? '#E63946' : '#0E2D50'
+  const dx = labelSide === 'left' ? -16 : 16
+  const anchor = labelSide === 'left' ? 'end' : 'start'
+
+  return (
+    <g transform={`translate(${x} ${y})`} onClick={onClick} className="cursor-pointer">
+      <g filter="url(#pinShadow)">
+        <path
+          d="M0 -22 C 8 -22 12 -16 12 -10 C 12 -2 0 8 0 8 C 0 8 -12 -2 -12 -10 C -12 -16 -8 -22 0 -22 Z"
+          fill={fill}
+        />
+        <circle cx="0" cy="-12" r="4.5" fill="#FFFFFF" />
+        {active && <circle cx="0" cy="-12" r="2" fill="#E63946" />}
+      </g>
+      <g transform={`translate(${dx} -10)`}>
+        <text textAnchor={anchor} fontSize="11.5" fontWeight="800" fill="#0E2D50"
+          stroke="#FFFFFF" strokeWidth="3" paintOrder="stroke">
+          {nameEn}
+        </text>
+        <text y="12" textAnchor={anchor} fontSize="10" fontWeight="700" fill="#0E2D50"
+          stroke="#FFFFFF" strokeWidth="2.5" paintOrder="stroke" opacity="0.85">
+          {name}
+        </text>
+      </g>
+    </g>
+  )
+}
